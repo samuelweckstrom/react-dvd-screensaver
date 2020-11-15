@@ -40,9 +40,9 @@ Pass the `ref` objects for parent and child to their respective components. Just
 
 <br>
 
-| Hook accepts following param:         ||
-| ------------- | ------------- |
-|`speed?: number`| How fast the child element will move around the parent area |
+| Hook accepts following params:|
+| ------------- |
+|`speed?: number`|
 
 <br>
 <br>
@@ -68,12 +68,12 @@ The component version will by default inherit the parent containers dimensions, 
 
 <br>
 
-| Props         |  |
-| ------------- | ------------- |
-|`speed?: number`||
-|`className?: string`||
-|`height?: number`||
-|`width?: number`||
-|`styles?: HTMLStyleElement`||
+| Props         |
+| ------------- |
+|`speed?: number`|
+|`className?: string`|
+|`height?: number`|
+|`width?: number`|
+|`styles?: HTMLStyleElement`|
 |`impactCallback?: (impactNumber: number) => void`|
 
