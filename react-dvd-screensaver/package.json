@@ -1,7 +1,7 @@
 {
   "name": "react-dvd-screensaver",
   "description": "The classic DVD screensaver as a React component and hook",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "files": [
     "dist"
