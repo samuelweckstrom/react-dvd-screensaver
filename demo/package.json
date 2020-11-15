@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "demo",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "dependencies": {
+    "react": "^16.3",
+    "react-blabla": "^0.0.5",
+    "react-dom": "^16.3",
+    "react-dvd-screensaver": "*"
+  }
+}
