@@ -68,10 +68,7 @@ The component version will by default inherit the parent containers dimensions, 
 
 <br>
 
-
-### Props
-
-| Param         |  |
+| Props         |  |
 | ------------- | ------------- |
 |`speed?: number`||
 |`className?: string`||
