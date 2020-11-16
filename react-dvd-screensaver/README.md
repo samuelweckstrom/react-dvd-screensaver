@@ -2,7 +2,7 @@
 
 [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
 
-The classic DVD screensaver emerged from our forgotted memories as a React component and hook.
+The classic DVD screensaver emerged from our lost memories as a React component and hook.
 
 [Demo](https://codesandbox.io/s/react-dvd-screensaver-demo-mp563)
 
