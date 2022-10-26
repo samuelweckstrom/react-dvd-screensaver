@@ -2,7 +2,7 @@
 
 [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
 
-The classic DVD screensaver emerged from our lost memories as a React component and hook.
+That badass DVD screensaver as a React hook and component.
 
 [Demo](https://codesandbox.io/s/react-dvd-screensaver-demo-mp563)
 
@@ -34,15 +34,16 @@ Pass the `ref` objects for parent and child to their respective components. Just
 
 | Hook returns following:||
 | ------------- | ------------- |
-|`parentRef: refObject`| Ref for parent component|
-|`childRef?: refObject`| Ref for child component|
-|`impactCount?: number`| Number increment for each impact within parent element|
+|`parentRef: refObject`| Ref of parent component|
+|`childRef: refObject`| Ref of child component|
+|`impactCount: number`| Number increment for each impact within parent element|
 
 <br>
 
 | Hook accepts following params:|
 | ------------- |
-|`speed?: number`|
+|`speed: number`|
+|`freezeOnHover: boolean`|
 
 <br>
 <br>
@@ -70,10 +71,15 @@ The component version will by default inherit the parent containers dimensions, 
 
 | Props         |
 | ------------- |
-|`speed?: number`|
 |`className?: string`|
+|`freezeOnHover?: boolean`|
 |`height?: number`|
 |`width?: number`|
+|`hoverCallback?: () => void`|
+|`impactCallback?: (impactNumber<number>) => void`|
+|`speed?: number`|
 |`styles?: HTMLStyleElement`|
-|`impactCallback?: (impactNumber: number) => void`|
 
+## License
+
+[MIT](LICENSE)
