@@ -1,143 +1,174 @@
 import React from 'react';
-import { useWindowSize } from './hooks';
+import { useWindowSize } from './utils';
+
+type AnimationRefProperties = {
+  animationFrameId: number;
+  impactCount: number;
+  isPosXIncrement: boolean;
+  isPosYIncrement: boolean;
+  containerHeight: number;
+  containerWidth: number;
+  positionX: number;
+  positionY: number;
+};
 
 export type DvdScreensaverProps = {
   children: React.ReactNode;
-  impactCallback?: (count: number) => void;
   className?: string;
-  styles?: HTMLStyleElement;
-  width?: string;
+  freezeOnHover?: boolean;
   height?: string;
+  width?: string;
+  hoverCallback?: () => void;
+  impactCallback?: (count: number) => void;
   speed?: number;
+  styles?: HTMLStyleElement;
 };
 
 const createHash = () => Math.random().toString(36).substring(7);
 
 const hashedClassName = createHash();
 export function DvdScreensaver(props: DvdScreensaverProps) {
-  const requestRef = React.useRef<any>({});
-  const previousTimeRef = React.useRef<number>();
-  const childRef = React.useRef<HTMLElement>();
-  const parentRef = React.useRef<any>();
-  const [positionX, setPositionX] = React.useState<number>(0);
-  const [positionY, setPositionY] = React.useState<number>(0);
-  const [impactCount, setImpactCount] = React.useState<number>(0);
   const { width: windowWidth, height: windowHeight } = useWindowSize();
-  const speed = props.speed || 0.15;
+
+  const animationRef = React.useRef<AnimationRefProperties>({
+    animationFrameId: 0,
+    impactCount: 0,
+    isPosXIncrement: false,
+    isPosYIncrement: false,
+    containerHeight: 0,
+    containerWidth: 0,
+    positionX: Math.random() * (windowWidth - 0) + 0,
+    positionY: Math.random() * (windowHeight - 0) + 0,
+  });
+  const elementRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = React.useState<boolean>(false);
+  const [impactCount, setImpactCount] = React.useState<number>(0);
 
   React.useEffect(() => {
     if (props.impactCallback) {
       props.impactCallback(impactCount);
     }
-  }, [impactCount]);
+  }, [impactCount, props]);
 
-  React.useEffect(() => {
-    if (parentRef.current && childRef.current) {
-      requestRef.current.parentWidth = parentRef.current?.getBoundingClientRect().width;
-      requestRef.current.parentHeight = parentRef.current?.getBoundingClientRect().height;
-      requestRef.current.childWidth = childRef.current?.getBoundingClientRect().width;
-      requestRef.current.childHeight = childRef.current?.getBoundingClientRect().height;
-      requestRef.current.impactCount = requestRef.current.impactCount || 0;
-    }
-  }, [parentRef, requestRef, childRef, windowWidth, windowHeight]);
+  const animate = () => {
+    const delta = props.speed || 5;
+    const setPos = ({
+      containerSpan,
+      delta,
+      elementSpan,
+      prevPos,
+      toggleRefKey,
+    }: {
+      containerSpan: number;
+      delta: number;
+      elementSpan: number;
+      prevPos: number;
+      toggleRefKey: 'isPosXIncrement' | 'isPosYIncrement';
+    }) => {
+      const parentBoundary = containerSpan - elementSpan;
+      const positionInRange = Math.min(Math.max(prevPos, 0), parentBoundary);
+      if (positionInRange >= parentBoundary) {
+        animationRef.current[toggleRefKey] = true;
+        animationRef.current.impactCount = animationRef.current.impactCount + 1;
+        setImpactCount(animationRef.current.impactCount);
+      }
+      if (positionInRange <= 0) {
+        animationRef.current[toggleRefKey] = false;
+        animationRef.current.impactCount = animationRef.current.impactCount + 1;
+        setImpactCount(animationRef.current.impactCount);
+      }
+      return animationRef.current[toggleRefKey]
+        ? positionInRange - delta
+        : positionInRange + delta;
+    };
 
-  const animate = (time: number) => {
-    if (previousTimeRef.current !== undefined) {
-      const move = (time - previousTimeRef.current) * speed;
-      const parentWidth = requestRef.current.parentWidth;
-      const parentHeight = requestRef.current.parentHeight;
-      const width = requestRef.current.childWidth;
-      const height = requestRef.current.childHeight;
-      const setPosX = (prevPos: number) => {
-        const positionWithinRange = Math.min(
-          Math.max(prevPos, 0),
-          parentWidth - width
-        );
-        if (positionWithinRange >= parentWidth - width) {
-          requestRef.current.isMovingRight = false;
-          requestRef.current.impactCount = requestRef.current.impactCount + 1;
-        }
-        if (positionWithinRange <= 0) {
-          requestRef.current.isMovingRight = true;
-          requestRef.current.impactCount = requestRef.current.impactCount + 1;
-        }
-        return requestRef.current.isMovingRight
-          ? positionWithinRange + move
-          : positionWithinRange - move;
-      };
-      const setPosY = (prevPos: number) => {
-        const positionWithinRange = Math.min(
-          Math.max(prevPos, 0),
-          parentHeight - height
-        );
-        if (positionWithinRange >= parentHeight - height) {
-          requestRef.current.isMovingDown = false;
-          requestRef.current.impactCount = requestRef.current.impactCount + 1;
-        }
-        if (positionWithinRange <= 0) {
-          requestRef.current.isMovingDown = true;
-          requestRef.current.impactCount = requestRef.current.impactCount + 1;
-        }
-        return requestRef.current.isMovingDown
-          ? positionWithinRange + move
-          : positionWithinRange - move;
-      };
-      setPositionX(setPosX);
-      setPositionY(setPosY);
+    if (elementRef.current && elementRef.current.parentElement) {
+      const containerHeight = elementRef.current.parentElement.clientHeight;
+      const containerWidth = elementRef.current.parentElement.clientWidth;
+      const elementHeight = elementRef.current.clientHeight;
+      const elementWidth = elementRef.current.clientWidth;
+
+      const posX = setPos({
+        containerSpan: containerWidth,
+        delta,
+        elementSpan: elementWidth,
+        prevPos: animationRef.current.positionX,
+        toggleRefKey: 'isPosXIncrement',
+      });
+
+      const posY = setPos({
+        containerSpan: containerHeight,
+        delta,
+        elementSpan: elementHeight,
+        prevPos: animationRef.current.positionY,
+        toggleRefKey: 'isPosYIncrement',
+      });
+
+      elementRef.current.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
+      animationRef.current.positionX = posX;
+      animationRef.current.positionY = posY;
     }
-    setImpactCount(requestRef.current.impactCount);
-    previousTimeRef.current = time;
-    requestRef.current.animte = requestAnimationFrame(animate);
+    const animationFrameId = requestAnimationFrame(animate);
+    animationRef.current.animationFrameId = animationFrameId;
   };
 
   React.useEffect(() => {
-    if (childRef.current) {
-      childRef.current.style.transform = `translate(${positionX}px, ${positionY}px)`;
+    if (props.freezeOnHover) {
+      if (hovered) {
+        cancelAnimationFrame(animationRef.current.animationFrameId);
+        animationRef.current.animationFrameId = 0;
+      }
+      if (!hovered && !animationRef.current.animationFrameId) {
+        animationRef.current.animationFrameId = requestAnimationFrame(animate);
+      }
     }
-  }, [positionX, positionY]);
+    if (props.hoverCallback) {
+      props.hoverCallback();
+    }
+  }, [hovered, props]);
 
-  const onVisibilityChange = () => {
-    requestRef.current.isVisible = !document.hidden;
-    if (document.hidden) {
-      cancelAnimationFrame(requestRef.current.animte);
-    } else {
-      requestRef.current.animte = requestAnimationFrame(animate);
-    }
+  const handleMouseOver = () => {
+    setHovered(true);
+  };
+
+  const handleMouseOut = () => {
+    setHovered(false);
   };
 
   React.useLayoutEffect(() => {
-    document.addEventListener('visibilitychange', onVisibilityChange, false);
-    return () => {
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-    };
-  }, [onVisibilityChange]);
-
-  React.useLayoutEffect(() => {
-    if (requestRef.current) {
-      requestRef.current.animte = requestAnimationFrame(animate);
+    if (animationRef.current && elementRef.current) {
+      elementRef.current.style.willChange = 'transform';
+      elementRef.current.onmouseover = handleMouseOver;
+      elementRef.current.onmouseout = handleMouseOut;
+      animationRef.current.animationFrameId = requestAnimationFrame(animate);
     }
     return () => {
-      cancelAnimationFrame(requestRef.current.animte);
+      elementRef.current?.removeEventListener('mouseover', handleMouseOut);
+      elementRef.current?.removeEventListener('mouseout', handleMouseOver);
+      cancelAnimationFrame(animationRef.current.animationFrameId);
     };
-  }, [requestRef]);
+  }, [animationRef, elementRef]);
 
   return (
     <>
       <style>
         {`.${hashedClassName} {
-        width: ${!props.className && props.width ? props.width : 'inherit'};
-        height: ${!props.className && props.height ? props.height : 'inherit'};
+          width: ${!props.className && props.width ? props.width : 'inherit'};
+          height: ${
+            !props.className && props.height ? props.height : 'inherit'
+          };
         }`}
       </style>
       <div
-        ref={parentRef}
+        ref={containerRef}
         className={`${hashedClassName} ${props.className}`}
         style={{
           ...props.styles,
         }}
       >
         {React.cloneElement(props.children as React.ReactElement<any>, {
-          ref: childRef,
+          ref: elementRef,
         })}
       </div>
     </>

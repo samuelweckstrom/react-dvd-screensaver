@@ -3,6 +3,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  font-size: 10px;
 }
 
 .contents {
@@ -10,7 +12,7 @@ body {
   height: 100vh;
 }
 
-.hooks-parent {
+.hooks-container {
   width: 100vw;
   height: 40rem;
   position: relative;
@@ -18,15 +20,37 @@ body {
   background-color: black;
 }
 
-.hooks-child {
-  width: 15rem;
-  height: auto;
+.hooks-element {
+  width: 10rem;
 }
 
+.hooks-element svg {
+  pointer-events: none;
+}
+
+
+@keyframes blink {
+  0% {
+    opacity: 1.0;
+  }
+
+  50% {
+    opacity: 0.0;
+  }
+
+  100% {
+    opacity: 1.0;
+  }
+}
 
 .component-parent {
   width: 100vw;
   height: 20rem;
   position: relative;
   border: 1px solid;
+}
+
+.component-parent img {
+  width: 5rem;
+  height: auto;
 }
