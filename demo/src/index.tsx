@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useDvdScreenSaver, DvdScreensaver } from 'react-dvd-screensaver';
+import { useDvdScreensaver, DvdScreensaver } from 'react-dvd-screensaver';
 import './styles.css';
 
 export const COLORS = [
@@ -32,24 +32,39 @@ export const COLORS = [
 ] as const;
 
 const App = () => {
-  const dvdScreenSaver = useDvdScreenSaver({ speed: 0.1 });
-  const [impactCount, setImpactCount] = React.useState<number>(0);
+  const { 
+    containerRef, 
+    elementRef 
+    hovered, 
+    impactCount
+  } = useDvdScreensaver({
+    freezeOnHover: true,
+    speed: 5,
+  });
+  const [componentImpactCount, setComponentImpactCount] =
+    React.useState<number>(0);
   const [logoColor, setLogoColor] = React.useState<string>(COLORS[0]);
   const handleComponentImpactCount = (count: number) => {
-    setImpactCount(count);
+    setComponentImpactCount(count);
   };
 
   React.useEffect(() => {
+    if (hovered) {
+      console.log('* FROZEN');
+    }
+  }, [hovered]);
+
+  React.useEffect(() => {
     setLogoColor(COLORS[Math.floor(Math.random() * COLORS.length)]);
-  }, [dvdScreenSaver.impactCount]);
+  }, [impactCount]);
 
   return (
     <div className="contents">
       <div className="content">
         <h1>Hooks example</h1>
-        <h2>impact count: {dvdScreenSaver.impactCount}</h2>
-        <div ref={dvdScreenSaver.parentRef} className="hooks-parent">
-          <div ref={dvdScreenSaver.childRef} className="hooks-child">
+        <h2>impact count: {impactCount}</h2>
+        <div ref={containerRef} className="hooks-container">
+          <div ref={elementRef} className="hooks-element">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 210 100"
@@ -62,7 +77,7 @@ const App = () => {
       </div>
       <div className="content">
         <h1>Component example</h1>
-        <h2>impact count: {impactCount}</h2>
+        <h2>impact count: {componentImpactCount}</h2>
         <div className="component-parent">
           <DvdScreensaver impactCallback={handleComponentImpactCount}>
             <img src={require('./doge.png')} alt="" />
