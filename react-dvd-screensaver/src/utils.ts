@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const useWindowSize = (): { [T: string]: number } => {
+export function useWindowSize(): { [T: string]: number } {
   const getSize = (): { [T: string]: number } => ({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -12,4 +12,4 @@ export const useWindowSize = (): { [T: string]: number } => {
     return (): void => window.removeEventListener('resize', onResize);
   }, []);
   return windowSize;
-};
+}
