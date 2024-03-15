@@ -164,7 +164,7 @@ export function DvdScreensaver(props: DvdScreensaverProps) {
         ref={containerRef}
         className={`${hashedClassName} ${props.className}`}
         style={{
-          ...props.styles,
+          ...(props.styles ? props.styles : ({} as any)),
         }}
       >
         {React.cloneElement(props.children as React.ReactElement<any>, {

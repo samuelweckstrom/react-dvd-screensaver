@@ -1,9 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { useEffect, useState } from 'react';
 import { useDvdScreensaver, DvdScreensaver } from 'react-dvd-screensaver';
 import './styles.css';
 
-export const COLORS = [
+const COLORS = [
   '#ff0000',
   '#ff4000',
   '#ff8000',
@@ -31,30 +30,24 @@ export const COLORS = [
   '#ff0000',
 ] as const;
 
-const App = () => {
-  const { 
-    containerRef, 
-    elementRef 
-    hovered, 
-    impactCount
-  } = useDvdScreensaver({
+export function App() {
+  const { containerRef, elementRef, hovered, impactCount } = useDvdScreensaver({
     freezeOnHover: true,
     speed: 5,
   });
-  const [componentImpactCount, setComponentImpactCount] =
-    React.useState<number>(0);
-  const [logoColor, setLogoColor] = React.useState<string>(COLORS[0]);
+  const [componentImpactCount, setComponentImpactCount] = useState<number>(0);
+  const [logoColor, setLogoColor] = useState<string>(COLORS[0]);
   const handleComponentImpactCount = (count: number) => {
     setComponentImpactCount(count);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (hovered) {
       console.log('* FROZEN');
     }
   }, [hovered]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLogoColor(COLORS[Math.floor(Math.random() * COLORS.length)]);
   }, [impactCount]);
 
@@ -63,8 +56,8 @@ const App = () => {
       <div className="content">
         <h1>Hooks example</h1>
         <h2>impact count: {impactCount}</h2>
-        <div ref={containerRef} className="hooks-container">
-          <div ref={elementRef} className="hooks-element">
+        <div ref={containerRef as any} className="hooks-container">
+          <div ref={elementRef as any} className="hooks-element">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 210 100"
@@ -80,12 +73,10 @@ const App = () => {
         <h2>impact count: {componentImpactCount}</h2>
         <div className="component-parent">
           <DvdScreensaver impactCallback={handleComponentImpactCount}>
-            <img src={require('./doge.png')} alt="" />
+            <img src="./doge.png" alt="" />
           </DvdScreensaver>
         </div>
       </div>
     </div>
   );
-};
-
-ReactDOM.render(<App />, document.getElementById('root'));
+}
