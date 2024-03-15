@@ -9,7 +9,8 @@
     "start:demo": "npm run dev -w demo",
     "start:package": "npm run dev -w react-dvd-screensaver",
     "build:demo": "npm run build -w demo",
-    "build:package": "npm run build -w react-dvd-screensaver"
+    "build:package": "npm run build -w react-dvd-screensaver",
+    "test": "jest"
   },
   "devDependencies": {
     "tsup": "^8.0.2"
