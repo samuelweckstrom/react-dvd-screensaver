@@ -1,117 +1,119 @@
-import React from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useWindowSize } from './utils';
 
-export type useDvdScreensaverParams = {
+/**
+ * Configuration options for the DVD screensaver behavior.
+ */
+export type Options = {
+  /** Whether the animation should pause when the element is hovered. */
   freezeOnHover?: boolean;
+  /** Callback function to execute when the element is hovered. */
   hoverCallback?: () => void;
+  /** Speed of the animation. */
   speed?: number;
 };
 
-type AnimationRefProperties = {
+type AnimationRef = {
   animationFrameId: number;
+  containerHeight: number;
+  containerWidth: number;
   impactCount: number;
   isPosXIncrement: boolean;
   isPosYIncrement: boolean;
-  containerHeight: number;
-  containerWidth: number;
   positionX: number;
   positionY: number;
 };
 
-export type UseDvdScreensaver = {
-  containerRef: React.RefObject<
-    HTMLElement | HTMLDivElement | React.ReactElement
-  >;
-  elementRef: React.RefObject<
-    HTMLElement | HTMLDivElement | React.ReactElement
-  >;
+/**
+ * The return type of the useDvdScreensaver hook, providing refs and state for external use.
+ */
+export type UseDvdScreensaver<T> = {
+  /** Ref for the container element. */
+  containerRef: React.Ref<T>;
+  /** Ref for the animated element. */
+  elementRef: React.Ref<T>;
+  /** State indicating if the element is currently hovered. */
   hovered: boolean;
+  /** The total number of boundary impacts made by the animated element. */
   impactCount: number;
 };
 
-export function useDvdScreensaver(
-  params: useDvdScreensaverParams
-): UseDvdScreensaver {
-  const { width: windowWidth, height: windowHeight } = useWindowSize();
-  const animationRef = React.useRef<AnimationRefProperties>({
+/**
+ * Hook to handle DVD screensaver animation
+ * @param options Configuration options for the screensaver animation.
+ * @returns An object containing refs to the container and element, as well as state.
+ */
+export function useDvdScreensaver<T extends HTMLDivElement>(
+  options?: Partial<Options>
+): UseDvdScreensaver<T> {
+  const { width: windowWidth } = useWindowSize();
+  const animationRef = useRef<AnimationRef>({
     animationFrameId: 0,
-    impactCount: 0,
-    isPosXIncrement: false,
-    isPosYIncrement: false,
     containerHeight: 0,
     containerWidth: 0,
-    positionX: Math.random() * (windowWidth - 0) + 0,
-    positionY: Math.random() * (windowHeight - 0) + 0,
+    impactCount: 0,
+    isPosXIncrement: true,
+    isPosYIncrement: true,
+    positionX: Math.random() * windowWidth,
+    positionY: Math.random() * windowWidth,
   });
-  const elementRef = React.useRef<HTMLElement | HTMLDivElement>(null);
-  const containerRef = React.useRef<HTMLElement | HTMLDivElement>(null);
-  const [impactCount, setImpactCount] = React.useState<number>(0);
-  const [hovered, setHovered] = React.useState<boolean>(false);
+  const elementRef = useRef<T>(null);
+  const containerRef = useRef<T>(null);
+  const [impactCount, setImpactCount] = useState<number>(0);
+  const [hovered, setHovered] = useState<boolean>(false);
 
-  const animate = () => {
-    const delta = params.speed || 5;
-    const setPos = ({
-      containerSpan,
-      delta,
-      elementSpan,
-      prevPos,
-      toggleRefKey,
-    }: {
-      containerSpan: number;
-      delta: number;
-      elementSpan: number;
-      prevPos: number;
-      toggleRefKey: 'isPosXIncrement' | 'isPosYIncrement';
-    }) => {
-      const parentBoundary = containerSpan - elementSpan;
-      const positionInRange = Math.min(Math.max(prevPos, 0), parentBoundary);
-      if (positionInRange >= parentBoundary) {
-        animationRef.current[toggleRefKey] = true;
-        animationRef.current.impactCount = animationRef.current.impactCount + 1;
-        setImpactCount(animationRef.current.impactCount);
-      }
-      if (positionInRange <= 0) {
-        animationRef.current[toggleRefKey] = false;
-        animationRef.current.impactCount = animationRef.current.impactCount + 1;
-        setImpactCount(animationRef.current.impactCount);
-      }
-      return animationRef.current[toggleRefKey]
-        ? positionInRange - delta
-        : positionInRange + delta;
-    };
+  function updatePosition(
+    containerSpan: number,
+    delta: number,
+    elementSpan: number,
+    prevPos: number,
+    toggleRefKey: 'isPosXIncrement' | 'isPosYIncrement'
+  ): number {
+    const parentBoundary = containerSpan - elementSpan;
+    let newPos =
+      prevPos + (animationRef.current[toggleRefKey] ? delta : -delta);
+    if (newPos <= 0 || newPos >= parentBoundary) {
+      animationRef.current[toggleRefKey] = !animationRef.current[toggleRefKey];
+      animationRef.current.impactCount += 1;
+      setImpactCount(animationRef.current.impactCount);
+      newPos = newPos <= 0 ? 0 : parentBoundary;
+    }
+    return newPos;
+  }
 
+  function animate() {
     if (elementRef.current && elementRef.current.parentElement) {
       const containerHeight = elementRef.current.parentElement.clientHeight;
       const containerWidth = elementRef.current.parentElement.clientWidth;
       const elementHeight = elementRef.current.clientHeight;
       const elementWidth = elementRef.current.clientWidth;
+      const delta = options?.speed || 2;
 
-      const posX = setPos({
-        containerSpan: containerWidth,
+      const posX = updatePosition(
+        containerWidth,
         delta,
-        elementSpan: elementWidth,
-        prevPos: animationRef.current.positionX,
-        toggleRefKey: 'isPosXIncrement',
-      });
-
-      const posY = setPos({
-        containerSpan: containerHeight,
+        elementWidth,
+        animationRef.current.positionX,
+        'isPosXIncrement'
+      );
+      const posY = updatePosition(
+        containerHeight,
         delta,
-        elementSpan: elementHeight,
-        prevPos: animationRef.current.positionY,
-        toggleRefKey: 'isPosYIncrement',
-      });
+        elementHeight,
+        animationRef.current.positionY,
+        'isPosYIncrement'
+      );
 
       elementRef.current.style.transform = `translate3d(${posX}px, ${posY}px, 0)`;
       animationRef.current.positionX = posX;
       animationRef.current.positionY = posY;
     }
-    const animationFrameId = requestAnimationFrame(animate);
-    animationRef.current.animationFrameId = animationFrameId;
-  };
 
-  React.useEffect(() => {
-    if (params.freezeOnHover) {
+    animationRef.current.animationFrameId = requestAnimationFrame(animate);
+  }
+
+  useEffect(() => {
+    if (options?.freezeOnHover) {
       if (hovered) {
         cancelAnimationFrame(animationRef.current.animationFrameId);
         animationRef.current.animationFrameId = 0;
@@ -120,32 +122,31 @@ export function useDvdScreensaver(
         animationRef.current.animationFrameId = requestAnimationFrame(animate);
       }
     }
-    if (params.hoverCallback) {
-      params.hoverCallback();
+    if (options?.hoverCallback) {
+      options.hoverCallback();
     }
-  }, [hovered, params]);
+  }, [hovered, options]);
 
-  const handleMouseOver = () => {
-    setHovered(true);
-  };
+  useLayoutEffect(() => {
+    const element = elementRef.current;
+    const handleMouseOver = () => setHovered(true);
+    const handleMouseOut = () => setHovered(false);
 
-  const handleMouseOut = () => {
-    setHovered(false);
-  };
-
-  React.useLayoutEffect(() => {
-    if (animationRef.current && elementRef.current) {
-      elementRef.current.style.willChange = 'transform';
-      elementRef.current.onmouseover = handleMouseOver;
-      elementRef.current.onmouseout = handleMouseOut;
+    if (element) {
+      element.style.willChange = 'transform';
+      element.addEventListener('mouseover', handleMouseOver);
+      element.addEventListener('mouseout', handleMouseOut);
       animationRef.current.animationFrameId = requestAnimationFrame(animate);
     }
+
     return () => {
-      elementRef.current?.removeEventListener('mouseover', handleMouseOut);
-      elementRef.current?.removeEventListener('mouseout', handleMouseOver);
+      if (element) {
+        element.removeEventListener('mouseover', handleMouseOver);
+        element.removeEventListener('mouseout', handleMouseOut);
+      }
       cancelAnimationFrame(animationRef.current.animationFrameId);
     };
-  }, [animationRef, elementRef]);
+  }, []);
 
   return {
     containerRef,

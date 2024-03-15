@@ -33,7 +33,7 @@ const COLORS = [
 export function App() {
   const { containerRef, elementRef, hovered, impactCount } = useDvdScreensaver({
     freezeOnHover: true,
-    speed: 5,
+    speed: 2,
   });
   const [componentImpactCount, setComponentImpactCount] = useState<number>(0);
   const [logoColor, setLogoColor] = useState<string>(COLORS[0]);
@@ -56,8 +56,8 @@ export function App() {
       <div className="content">
         <h1>Hooks example</h1>
         <h2>impact count: {impactCount}</h2>
-        <div ref={containerRef as any} className="hooks-container">
-          <div ref={elementRef as any} className="hooks-element">
+        <div ref={containerRef} className="hooks-container">
+          <div ref={elementRef} className="hooks-element">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 210 100"

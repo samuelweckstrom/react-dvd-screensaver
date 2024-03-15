@@ -2,86 +2,95 @@
 
 [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
 
-That badass DVD screensaver as a React hook and component.
+DVD-era nostalgia in React.
 
 [Demo](https://codesandbox.io/s/react-dvd-screensaver-demo-mp563)
 
 <br>
 
 ```
-yarn add react-dvd-screensaver
+npm i react-dvd-screensaver
 ```
 
 <br>
 
 ## Use hook
 
+To add a DVD screensaver effect to your React components, you can use the useDvdScreensaver hook. This hook provides you with references for both the parent (container) and the child (moving element), along with the number of times the child has hit the edges of the container.
 <br>
 
-```
+```typescript
 import { useDvdScreensaver } from 'react-dvd-screensaver'
 
 ...
 
-const dvdScreensaver = useDvdScreensaver();
+const { containerRef, elementRef } = useDvdScreensaver();
 
 return (
-  <div ref={dvdScreensaver.parentRef}>
-    <MyScreensaverComponent ref={dvdScreensaver.childRef} />
+  <div ref={containerRef}>
+    <MyScreensaverComponent ref={elementRef} />
   </div>
 )
+
 ```
 
 Pass the `ref` objects for parent and child to their respective components. Just remember to set the dimensions for both of them, where the `childRef` component naturally is smaller than the parent so there is room for it to move around.
 
 | Hook returns following:||
 | ------------- | ------------- |
-|`parentRef: refObject`| Ref of parent component|
-|`childRef: refObject`| Ref of child component|
-|`impactCount: number`| Number increment for each impact within parent element|
+|`parentRef: refObject`| Ref of the parent container component|
+|`elementRef: refObject`| Ref of the element to animate|
+|`impactCount: number`| Number of times the element has hit the container edges|
 
 <br>
 
-| Hook accepts following params:|
-| ------------- |
-|`speed: number`|
-|`freezeOnHover: boolean`|
+### Hook Options
+The hook accepts the following parameters:
 
-<br>
+
+| Option | Type | Description |
+| ------------- | -------|-----|
+|`speed`| `number` | Speed of the animation |
+|`freezeOnHover`| `boolean` | Whether to pause the animation on hover |
+|`hoverCallback`| `Function` | Callback function triggered on hover |
+
 <br>
 
 ## Component
 
+For easier implementation, you can also use the DvdScreensaver component to wrap any child component with the DVD screensaver effect.
+
 <br>
 
-```
+```typescript
 import { DvdScreensaver } from 'react-dvd-screensaver'
 
 ...
 
-  return (
-    <div className="screensaver-container">
-      <DvdScreensaver>
-        <MyScreenSaverComponent />
-      </DvdScreensaver>
-    </div>
-  )
+return (
+  <div className="screensaver-container">
+    <DvdScreensaver>
+      <MyScreensaverComponent />
+    </DvdScreensaver>
+  </div>
+)
 ```
 
-The component version will by default inherit the parent containers dimensions, but you can also pass your own styles to `DvdScreensaver` by passing a `className`, setting a style object or `height` and `width` -props.
+The component inherits the parent container's dimensions by default, but you can also specify dimensions or styling directly via props.
 
 <br>
 
-| Props         |
-| ------------- |
-|`className?: string`|
-|`freezeOnHover?: boolean`|
-|`height?: number`|
-|`width?: number`|
-|`hoverCallback?: () => void`|
-|`impactCallback?: (impactNumber<number>) => void`|
-|`speed?: number`|
-|`styles?: HTMLStyleElement`|
+### Props
+
+| Prop         | Type | Description |
+| ------------- | ------| -----|
+|`className`| `string` | Optional CSS class for the container |
+|`freezeOnHover`| `boolean` | Pause animation when hovered |
+|`height`| `number` | Optional height for the container |
+|`width`| `number` | Optional width for the container |
+|`hoverCallback|`Function` | Callback function triggered on hover |
+|`impactCallback`|`(count: number) => void`|Callback function triggered on impact with edges |
+|`speed`|`number`| Speed of the animation |
 
 ## License
 
