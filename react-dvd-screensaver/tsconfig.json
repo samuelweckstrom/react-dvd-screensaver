@@ -1,26 +1,11 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "alwaysStrict": true,
     "declaration": true,
     "esModuleInterop": true,
+    "inlineSourceMap": true,
     "jsx": "react",
-    "module": "es6",
-    "moduleResolution": "classic",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "outDir": "./dist",
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "target": "es5",
     "lib": [
       "es5",
       "es2015",
@@ -30,13 +15,29 @@
       "es2019",
       "es2020",
       "DOM"
-    ]
+    ],
+    "module": "esnext",
+    "moduleResolution": "Bundler",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "strict": false,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "target": "es2015"
   },
-  "include": [
-    "./src/**/*"
-  ],
   "exclude": [
-    "./src/__tests__",
+    "dist",
     "node_modules"
+  ],
+  "include": [
+    "./src/*"
   ]
 }
