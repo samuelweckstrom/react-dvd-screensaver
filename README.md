@@ -4,7 +4,9 @@
 
 DVD-era nostalgia in React.
 
-[Demo](https://codesandbox.io/s/react-dvd-screensaver-demo-mp563)
+[Demo](https://samuel.weckstrom.xyz/react-dvd-screensaver)
+
+[Try the project on Stackblitz](https://stackblitz.com/~/github.com/samuelweckstrom/react-dvd-screensaver)
 
 <br>
 
