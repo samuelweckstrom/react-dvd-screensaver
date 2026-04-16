@@ -1,56 +1,282 @@
-html,
-body {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: system-ui, Arial, sans-serif;
+}
+
+#root {
+  height: 100%;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ── TV top bar ─── */
+
+.tv-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.tv-top-bezel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-bottom: 1px solid #fff;
+  flex-shrink: 0;
+}
+
+.tv-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.tv-brand-dvd {
+  color: #e8ff00;
+}
+
+.tv-brand-rest {
+  color: #fff;
+}
+
+.tv-brand-badge {
   font-size: 10px;
+  border: 1px solid #fff;
+  padding: 1px 5px;
+  color: #fff;
 }
 
-.contents {
-  width: 100vw;
-  height: 100vh;
+.tv-top-right {
+  display: flex;
+  gap: 6px;
 }
 
-.hooks-container {
-  width: 100vw;
-  height: 40rem;
+.tv-status-badge {
+  font-size: 10px;
+  font-weight: bold;
+  border: 1px solid currentColor;
+  padding: 1px 6px;
+}
+
+.tv-status-badge--frozen { color: #0ff; }
+.tv-status-badge--paused { color: #e8ff00; }
+
+/* ── Screen ─── */
+
+.tv-screen-surround {
+  flex: 1;
+  min-height: 0;
+  border-bottom: 1px solid #fff;
+}
+
+.screensaver-stage {
   position: relative;
-  border: 1px solid;
-  background-color: black;
+  height: 100%;
+  overflow: hidden;
+  background: #050505;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.hooks-element {
-  width: 10rem;
+.dvd-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-touch-callout: none;
 }
 
-.hooks-element svg {
+.dvd-logo {
+  display: block;
+  width: clamp(80px, 16vw, 160px);
+  height: auto;
   pointer-events: none;
 }
 
+/* ── HUD ─── */
 
-@keyframes blink {
-  0% {
-    opacity: 1.0;
-  }
-
-  50% {
-    opacity: 0.0;
-  }
-
-  100% {
-    opacity: 1.0;
-  }
+.stage-hud {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  pointer-events: none;
 }
 
-.component-parent {
-  width: 100vw;
-  height: 20rem;
-  position: relative;
-  border: 1px solid;
+.hud-stat {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
 }
 
-.component-parent img {
-  width: 5rem;
-  height: auto;
+.hud-number {
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.05);
+  letter-spacing: -2px;
+}
+
+.hud-number--corners {
+  color: rgba(232, 255, 0, 0.06);
+}
+
+.hud-number--hit {
+  animation: corner-pop 0.5s ease-out forwards;
+}
+
+@keyframes corner-pop {
+  0%   { color: rgba(232, 255, 0, 0.85); }
+  60%  { color: rgba(232, 255, 0, 0.25); }
+  100% { color: rgba(232, 255, 0, 0.06); }
+}
+
+.hud-label {
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.06);
+  margin-top: 3px;
+}
+
+.hud-label--corners { color: rgba(232, 255, 0, 0.08); }
+
+/* ── Corner strobe ─── */
+
+.corner-strobe {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  animation: strobe 1.2s ease-out forwards;
+}
+
+@keyframes strobe {
+  0%   { background: rgba(232, 255, 0, 0.35); }
+  12%  { background: transparent; }
+  24%  { background: rgba(232, 255, 0, 0.25); }
+  36%  { background: transparent; }
+  50%  { background: rgba(232, 255, 0, 0.14); }
+  65%  { background: transparent; }
+  80%  { background: rgba(232, 255, 0, 0.06); }
+  100% { background: transparent; }
+}
+
+/* ── DVD Player panel ─── */
+
+.dvd-player {
+  flex-shrink: 0;
+  background: #000;
+}
+
+.player-panel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  flex-wrap: wrap;
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.player-speed-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 160px;
+}
+
+.player-ctrl-header {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 12px;
+}
+
+.player-ctrl-label {
+  font-weight: bold;
+}
+
+.player-ctrl-value {
+  color: #e8ff00;
+  font-weight: bold;
+}
+
+.player-slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #888;
+}
+
+.player-btn-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Deliberately unstyled — native browser button appearance */
+.player-btn {
+  appearance: auto;
+  -webkit-appearance: auto;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 4px 14px;
+  cursor: pointer;
+}
+
+/* Deliberately unstyled — native browser range appearance */
+.player-slider {
+  appearance: auto;
+  -webkit-appearance: auto;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Hide the LED spans — not needed with native buttons */
+.btn-led {
+  display: none;
+}
+
+.player-end {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.player-github {
+  display: flex;
+  align-items: center;
+  color: #888;
+  text-decoration: none;
+}
+
+.player-github:hover {
+  color: #fff;
 }

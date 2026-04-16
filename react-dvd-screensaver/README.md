@@ -1,98 +1,149 @@
-# React DVD Screensaver
+# react-dvd-screensaver
 
 [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
+[![npm version](https://img.shields.io/npm/v/react-dvd-screensaver.svg)](https://www.npmjs.com/package/react-dvd-screensaver)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/react-dvd-screensaver)](https://bundlephobia.com/package/react-dvd-screensaver)
 
-DVD-era nostalgia in React.
+DVD-era nostalgia in React. Zero dependencies, fully typed, works on desktop and mobile, supports React 16 through 19.
 
-[Demo](https://samuel.weckstrom.xyz/react-dvd-screensaver)
-
-[Try the project on Stackblitz](https://stackblitz.com/~/github.com/samuelweckstrom/react-dvd-screensaver)
+[Demo](https://samuel.weckstrom.dev/react-dvd-screensaver) · [Try on StackBlitz](https://stackblitz.com/~/github.com/samuelweckstrom/react-dvd-screensaver)
 
 <br>
 
 ```
+pnpm add react-dvd-screensaver
+# or
 npm i react-dvd-screensaver
 ```
 
 <br>
 
-## Use hook
+## Usage
 
-To add a DVD screensaver effect to your React components, you can use the useDvdScreensaver hook. This hook provides you with references for both the parent (container) and the child (moving element), along with the number of times the child has hit the edges of the container.
-<br>
+```tsx
+import { useDvdScreensaver } from 'react-dvd-screensaver';
 
-```typescript
-import { useDvdScreensaver } from 'react-dvd-screensaver'
+function MyComponent() {
+  const { containerRef, elementRef, impactCount } = useDvdScreensaver({ speed: 3 });
 
-...
-
-const { containerRef, elementRef } = useDvdScreensaver();
-
-return (
-  <div ref={containerRef}>
-    <MyScreensaverComponent ref={elementRef} />
-  </div>
-)
-
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '400px' }}>
+      <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <MyLogo />
+      </div>
+    </div>
+  );
+}
 ```
 
-Pass the `ref` objects for parent and child to their respective components. Just remember to set the dimensions for both of them, where the `childRef` component naturally is smaller than the parent so there is room for it to move around.
-
-| Hook returns following:||
-| ------------- | ------------- |
-|`parentRef: refObject`| Ref of the parent container component|
-|`elementRef: refObject`| Ref of the element to animate|
-|`impactCount: number`| Number of times the element has hit the container edges|
+The container element needs `position: relative` (or `absolute` / `fixed`) to establish a positioning context. The animated element needs `position: absolute; top: 0; left: 0` as its starting point.
 
 <br>
 
-### Hook Options
-The hook accepts the following parameters:
+## Options
 
-
-| Option | Type | Description |
-| ------------- | -------|-----|
-|`speed`| `number` | Speed of the animation |
-|`freezeOnHover`| `boolean` | Whether to pause the animation on hover |
-|`hoverCallback`| `Function` | Callback function triggered on hover |
-
-<br>
-
-## Component
-
-For easier implementation, you can also use the DvdScreensaver component to wrap any child component with the DVD screensaver effect.
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `speed` | `number` | `2` | Speed of the animation in pixels per frame |
+| `freezeOnHover` | `boolean` | `false` | Pause animation on mouse hover or touch |
+| `paused` | `boolean` | `false` | Programmatically pause and resume the animation |
+| `impactCallback` | `(count: number) => void` | — | Called on each boundary impact with total count |
+| `onCornerHit` | `() => void` | — | Called when the element hits a corner (both axes at once) |
+| `hoverCallback` | `() => void` | — | Called when hover or touch begins |
 
 <br>
 
-```typescript
-import { DvdScreensaver } from 'react-dvd-screensaver'
+## Return values
 
-...
+| Property | Type | Description |
+|---|---|---|
+| `containerRef` | `RefObject` | Attach to the container element |
+| `elementRef` | `RefObject` | Attach to the element that should animate |
+| `hovered` | `boolean` | Whether the element is currently hovered or touched |
+| `impactCount` | `number` | Total number of boundary impacts |
 
-return (
-  <div className="screensaver-container">
-    <DvdScreensaver>
-      <MyScreensaverComponent />
-    </DvdScreensaver>
-  </div>
-)
+<br>
+
+## Examples
+
+### Change color on impact
+
+```tsx
+const COLORS = ['#ff4081', '#7c4dff', '#00bcd4', '#69f0ae'];
+
+function MyComponent() {
+  const [color, setColor] = useState(COLORS[0]);
+
+  const { containerRef, elementRef } = useDvdScreensaver({
+    impactCallback: (count) => setColor(COLORS[count % COLORS.length]),
+  });
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '400px' }}>
+      <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <MyLogo fill={color} />
+      </div>
+    </div>
+  );
+}
 ```
 
-The component inherits the parent container's dimensions by default, but you can also specify dimensions or styling directly via props.
+### Pause and resume
+
+```tsx
+function MyComponent() {
+  const [paused, setPaused] = useState(false);
+
+  const { containerRef, elementRef } = useDvdScreensaver({ paused });
+
+  return (
+    <>
+      <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '400px' }}>
+        <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0 }}>
+          <MyLogo />
+        </div>
+      </div>
+      <button onClick={() => setPaused((p) => !p)}>{paused ? 'Resume' : 'Pause'}</button>
+    </>
+  );
+}
+```
+
+### Corner hit detection
+
+```tsx
+function MyComponent() {
+  const { containerRef, elementRef } = useDvdScreensaver({
+    onCornerHit: () => console.log('Corner!'),
+  });
+
+  // ...
+}
+```
+
+### Next.js App Router
+
+Add the `'use client'` directive. The hook is SSR-safe and will not cause hydration mismatches.
+
+```tsx
+'use client';
+
+import { useDvdScreensaver } from 'react-dvd-screensaver';
+
+export default function ScreensaverPage() {
+  const { containerRef, elementRef } = useDvdScreensaver({ speed: 3 });
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '100vh' }}>
+      <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <MyLogo />
+      </div>
+    </div>
+  );
+}
+```
 
 <br>
-
-### Props
-
-| Prop         | Type | Description |
-| ------------- | ------| -----|
-|`className`| `string` | Optional CSS class for the container |
-|`freezeOnHover`| `boolean` | Pause animation when hovered |
-|`height`| `number` | Optional height for the container |
-|`width`| `number` | Optional width for the container |
-|`hoverCallback|`Function` | Callback function triggered on hover |
-|`impactCallback`|`(count: number) => void`|Callback function triggered on impact with edges |
-|`speed`|`number`| Speed of the animation |
 
 ## License
 

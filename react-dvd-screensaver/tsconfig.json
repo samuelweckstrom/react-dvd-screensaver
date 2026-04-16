@@ -25,6 +25,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "outDir": "./dist",
+    "ignoreDeprecations": "6.0",
     "skipLibCheck": true,
     "strict": false,
     "strictBindCallApply": true,

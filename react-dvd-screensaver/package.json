@@ -1,24 +1,31 @@
 {
   "name": "react-dvd-screensaver",
-  "description": "DVD-era nostalgia in React",
+  "description": "DVD-era nostalgia in React. Zero dependencies, fully typed, SSR-safe, supports React 16 through 19.",
   "version": "0.1.1",
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "llms.txt"
   ],
   "types": "./dist/index.d.ts",
   "typings": "./dist/index.d.ts",
-  "repository": "git@github.com:samuelweckstrom/react-dvd-screensaver.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samuelweckstrom/react-dvd-screensaver"
+  },
   "author": "Samuel Weckström",
   "license": "MIT",
   "peerDependencies": {
-    "react": "^16.3 || ^17.0 || ^18.0 || ^19.0",
-    "react-dom": "^16.3 || ^17.0 || ^18.0 || ^19.0"
+    "react": "^16.3 || ^17.0 || ^18.0 || ^19.0"
   },
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "scripts": {
     "dev": "tsup --watch",
@@ -27,8 +34,19 @@
   "keywords": [
     "react",
     "dvd",
+    "dvd-screensaver",
     "screensaver",
+    "bouncing",
+    "bouncing-logo",
+    "animation",
+    "react-hook",
+    "hook",
+    "floating",
     "marquee",
-    "nostalgia"
+    "nostalgia",
+    "retro",
+    "requestanimationframe",
+    "typescript",
+    "zero-dependencies"
   ]
 }
