@@ -2,10 +2,6 @@
   "name": "monorepo",
   "private": true,
   "packageManager": "pnpm@10.33.0",
-  "workspaces": [
-    "demo",
-    "react-dvd-screensaver"
-  ],
   "scripts": {
     "dev:demo": "pnpm --filter demo run dev",
     "dev:package": "pnpm --filter react-dvd-screensaver run dev",
