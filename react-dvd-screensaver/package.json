@@ -48,5 +48,8 @@
     "requestanimationframe",
     "typescript",
     "zero-dependencies"
-  ]
+  ],
+  "devDependencies": {
+    "@types/react": "^19.2.14"
+  }
 }
