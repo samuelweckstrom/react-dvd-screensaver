@@ -1,0 +1,163 @@
+# react-dvd-screensaver
+
+> DVD screensaver bouncing animation hook for React. Zero dependencies, fully typed, SSR-safe (Next.js App Router compatible), supports React 16 through 19.
+
+## Install
+
+```
+npm i react-dvd-screensaver
+# or
+pnpm add react-dvd-screensaver
+```
+
+## Quick start
+
+```tsx
+import { useDvdScreensaver } from 'react-dvd-screensaver';
+
+function MyComponent() {
+  const { containerRef, elementRef, impactCount } = useDvdScreensaver({ speed: 3 });
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '400px' }}>
+      <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <MyLogo />
+      </div>
+    </div>
+  );
+}
+```
+
+**Required CSS:** The container must have `position: relative` (or `absolute` / `fixed`) to establish a positioning context. The animated element must have `position: absolute; top: 0; left: 0` as its starting point.
+
+## API
+
+### `useDvdScreensaver(options?): UseDvdScreensaver`
+
+**Options**
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `speed` | `number` | `2` | Speed in pixels per frame at 60 fps. Time-based internally, so consistent across 60/90/120 Hz displays. |
+| `freezeOnHover` | `boolean` | `false` | Pause the animation on mouse hover or touch. |
+| `paused` | `boolean` | `false` | Programmatically pause and resume the animation. |
+| `impactCallback` | `(count: number) => void` | — | Called on each boundary hit with the running total impact count. |
+| `onCornerHit` | `() => void` | — | Called when the element hits two boundaries simultaneously (a corner). |
+| `hoverCallback` | `() => void` | — | Called when hover or touch begins on the element. |
+
+**Return values**
+
+| Property | Type | Description |
+|---|---|---|
+| `containerRef` | `RefObject<T>` | Attach to the container element. Falls back to `parentElement` if not provided. |
+| `elementRef` | `RefObject<T>` | Attach to the element that should animate. |
+| `hovered` | `boolean` | `true` while the element is hovered or touched. |
+| `impactCount` | `number` | Running total of boundary impacts (reactive). |
+
+The hook is generic: `useDvdScreensaver<HTMLDivElement>()` — default is `HTMLDivElement`.
+
+## Examples
+
+### Change color on every impact
+
+```tsx
+const COLORS = ['#ff4081', '#7c4dff', '#00bcd4', '#69f0ae'];
+
+function MyComponent() {
+  const [color, setColor] = useState(COLORS[0]);
+
+  const { containerRef, elementRef } = useDvdScreensaver({
+    impactCallback: (count) => setColor(COLORS[count % COLORS.length]),
+  });
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '400px' }}>
+      <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <MyLogo fill={color} />
+      </div>
+    </div>
+  );
+}
+```
+
+### Pause and resume
+
+```tsx
+function MyComponent() {
+  const [paused, setPaused] = useState(false);
+  const { containerRef, elementRef } = useDvdScreensaver({ paused });
+
+  return (
+    <>
+      <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '400px' }}>
+        <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0 }}>
+          <MyLogo />
+        </div>
+      </div>
+      <button onClick={() => setPaused((p) => !p)}>{paused ? 'Resume' : 'Pause'}</button>
+    </>
+  );
+}
+```
+
+### Corner hit detection
+
+```tsx
+function MyComponent() {
+  const { containerRef, elementRef } = useDvdScreensaver({
+    onCornerHit: () => console.log('Corner hit!'),
+  });
+  // ...
+}
+```
+
+### Freeze on hover
+
+```tsx
+function MyComponent() {
+  const { containerRef, elementRef, hovered } = useDvdScreensaver({ freezeOnHover: true });
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '400px' }}>
+      <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0, opacity: hovered ? 0.5 : 1 }}>
+        <MyLogo />
+      </div>
+    </div>
+  );
+}
+```
+
+### Next.js App Router
+
+Add the `'use client'` directive. The hook is SSR-safe and will not cause hydration mismatches.
+
+```tsx
+'use client';
+
+import { useDvdScreensaver } from 'react-dvd-screensaver';
+
+export default function ScreensaverPage() {
+  const { containerRef, elementRef } = useDvdScreensaver({ speed: 3 });
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', height: '100vh' }}>
+      <div ref={elementRef} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <MyLogo />
+      </div>
+    </div>
+  );
+}
+```
+
+## Notes
+
+- Respects the OS `prefers-reduced-motion` accessibility setting — animation stops automatically when enabled.
+- Uses `requestAnimationFrame` with a time-based delta so speed is consistent across 60 Hz, 90 Hz, and 120 Hz displays.
+- Uses `ResizeObserver` to clamp the element position when the container resizes.
+- Touch events are registered as passive listeners to avoid blocking page scroll.
+- `containerRef` is optional — if omitted, `parentElement` is used as the bounding container.
+- Zero runtime dependencies; peer dependency is React ≥ 16.3.
+
+## License
+
+MIT

@@ -2,39 +2,46 @@ name: CI/CD
 
 on:
   push:
-    branches: [ '**' ]
+    branches: ['**']
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-      - run: npm ci
-      - run: npm test
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
 
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    # needs: test
+    needs: test
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '22.x'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
+
       - name: Build package
-        run: npm run build:package
+        run: pnpm build:package
+
       - name: Build demo
-        run: npm run build:demo
+        run: pnpm build:demo
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@v0.5.1

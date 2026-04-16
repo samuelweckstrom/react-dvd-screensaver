@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
-    "declaration": true,
     "esModuleInterop": true,
-    "jsx": "react",
-    "module": "es6",
-    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "outDir": "./dist",
     "sourceMap": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,9 +18,8 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "target": "es5",
+    "target": "es2015",
     "lib": [
-      "es5",
       "es2015",
       "es2016",
       "es2017",
@@ -30,13 +27,14 @@
       "es2019",
       "es2020",
       "DOM"
-    ]
+    ],
+    "types": ["jest", "@testing-library/jest-dom"]
   },
   "include": [
-    "./src/**/*"
+    "./setupTests.ts",
+    "./react-dvd-screensaver/src/**/*"
   ],
   "exclude": [
-    "./src/__tests__",
     "node_modules"
   ]
 }
