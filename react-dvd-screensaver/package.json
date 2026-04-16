@@ -1,7 +1,7 @@
 {
   "name": "react-dvd-screensaver",
   "description": "DVD-era nostalgia in React. Zero dependencies, fully typed, SSR-safe, supports React 16 through 19.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "dist/index.js",
   "files": [
     "dist",
